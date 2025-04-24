@@ -1,26 +1,25 @@
 const express = require("express");
 const { body, validationResult } = require("express-validator");
-const app = express();
-const port = process.env.PORT || 3000;
-const users = require("./data/student");
+const users = require("../data/student");
+const serverless = require("serverless-http");
 
-// middleware to parse JSON data
+const app = express();
 app.use(express.json());
 
-// get request for all users
-app.get("/users", (req, res) => {
+// GET all users
+app.get("/api/users", (req, res) => {
   res.json(users);
 });
 
-// get request for one user
-app.get("/users/:id", (req, res) => {
+// GET single user
+app.get("/api/users/:id", (req, res) => {
   const user = users.find((u) => u.id === parseInt(req.params.id));
   user ? res.json(user) : res.status(404).send({ message: "User not found" });
 });
 
-// post data with validation
+// POST new user
 app.post(
-  "/userspost",
+  "/api/userspost",
   [
     body("name").notEmpty().withMessage("Name is required"),
     body("email").isEmail().withMessage("Invalid email"),
@@ -42,11 +41,11 @@ app.post(
   }
 );
 
-//Update request with validation
+// PUT update user
 app.put(
-  "/update/:id",
+  "/api/update/:id",
   [
-    body("name").optional().notEmpty().withMessage("name cannot be empty"),
+    body("name").optional().notEmpty().withMessage("Name cannot be empty"),
     body("email").optional().isEmail().withMessage("Invalid email"),
   ],
   (req, res) => {
@@ -61,18 +60,18 @@ app.put(
     user.name = req.body.name || user.name;
     user.email = req.body.email || user.email;
     user.password = req.body.password || user.password;
-    user.isactive = req.body.isactive || user.isactive;
+    user.isactive = req.body.isactive ?? user.isactive;
     res.json(user);
   }
 );
 
-// delete request
-app.delete("/delete/:id", (req, res) => {
+// DELETE user
+app.delete("/api/delete/:id", (req, res) => {
   const index = users.findIndex((u) => u.id === parseInt(req.params.id));
   index !== -1
     ? res.json(users.splice(index, 1))
     : res.status(404).send({ message: "User not found" });
 });
 
-// start the server
-app.listen(port, () => console.log(`Server running on port ${port}`));
+// Export handler for Vercel
+module.exports = serverless(app);

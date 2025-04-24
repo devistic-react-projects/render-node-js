@@ -1,18 +1,14 @@
 {
-  "name": "api-express",
+  "name": "vercel-express-api",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "main": "api/index.js",
   "scripts": {
-    "start": "node server.js"
+    "dev": "vercel dev"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
   "type": "commonjs",
   "dependencies": {
     "express": "^5.1.0",
     "express-validator": "^7.2.1",
-    "nodemon": "^3.1.9"
+    "serverless-http": "^3.1.0"
   }
 }
